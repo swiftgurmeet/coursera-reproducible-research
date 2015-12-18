@@ -38,20 +38,19 @@ library(ggplot2)
 
 
 ```r
-#Download and/or unzip the source data file, if needed.
+#Download the source data file, if needed.
 url <- "https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2FStormData.csv.bz2"
 bzfile <- "repdata-data-StormData.csv.bz2"
 
-#if(!file.exists(bzfile)) {
-#    download.file(url,"repdata-data-StormData.csv.bz2")
-#}
-#if(!file.exists(bzfile)) {
-#  cat("File ",bzfile," not found...exiting\n")
-#  quit()
-#} 
+if(!file.exists(bzfile)) {
+    download.file(url,"repdata-data-StormData.csv.bz2")
+}
+if(!file.exists(bzfile)) {
+  cat("File ",bzfile," not found...exiting\n")
+  quit()
+} 
 
-#data <- read.csv(bzfile)
-data <- read.csv("data.csv")
+data <- read.csv(bzfile)
 ```
 Code for cleaning the data is kept in the appendix but executed here.
 
