@@ -18,7 +18,7 @@ knit2html("PA2.Rmd")
 More details in the appendix.
 
 ## Synopsis
-This report analyses and summarizes data from the NOAA Storm Database and analyses the consequences of severe weather events on the population health and economy. After the data is downloaded and cleaned, it is grouped by event type and summarized for the total of the statistic, the statistic being the fatalities, injuries and economic damage caused by each event type. The results are displayed as the top 10 most significant event types in terms of their effect in the form of a bar plot. The conclusions from these bar charts can be summarized as follows: The population health is most harmed by Tornados, Excessive Heat and Floods in terms of fatalities and by Toranodos, Floods and Excessive Heat in terms of Injuries, with Tornados far outstripping other causes in either case. Lightning is significant cause of fatalities and injuries (who knew?). The top causes of economic damage are Hurricanes, Tornados, Storm surge and Flooding.
+This report analyses and summarizes data from the NOAA Storm Database and analyses the consequences of severe weather events on the population health and economy. After the data is downloaded and cleaned, it is grouped by event type and summarized for the total of the statistic, the statistic being the fatalities, injuries and economic damage caused by each event type. The results are displayed as the top 10 most significant event types in terms of their effect in the form of a bar plot. The conclusions from these bar charts can be summarized as follows: The population health is most harmed by Tornados, Excessive Heat and Floods in terms of fatalities and by Tornodos, Floods and Excessive Heat in terms of Injuries, with Tornados far outstripping other causes in either case. Lightning is significant cause of fatalities and injuries (who knew?). The top causes of economic damage are Hurricanes, Tornados, Storm surge and Flooding.
 
 ## Data Processing
 
@@ -55,14 +55,14 @@ data <- read.csv("data.csv")
 ```
 Code for cleaning the data is kept in the appendix but executed here.
 
-
+In this section, the data is grouped by the event type and summarized to show the total fatalities, injuries and economic damage caused by each type of the severe weather event over the entire database created from the source.
 
 ```r
 #Use the exponent in the field PROPDMGEXP to interpret the PROPDMG number
 # and assign to the new field PDMG
 data <- data %>% mutate(PDMG = PROPDMG * (10 ^ as.numeric(PROPDMGEXP)))
 data <- data %>% mutate(CDMG = CROPDMG * (10 ^ as.numeric(CROPDMGEXP)))
-# Total economic damage = sum of property and crop damage
+# Total economic damage = sum of property and crop damage. Divide by 1e9 to get results in billions.
 dmg.by.type <- data %>% 
            group_by(EVTYPE) %>% 
            summarize(prop.damage.in.billions = 
@@ -145,7 +145,7 @@ The content of this report is authored in RStudio using R Markdown format and co
 
 ###Data Cleaning
 
-There are unexpected values in the PROPDMGEXP/CROPDMGEXP fields for a small fraction of the events. These are interpreted suitably. For example, if the damage (PROPDMG/CROPDMG) field is zero, the unit is irrelevant and imputed as 1. In some cases, the CROPDMG unit is imputed to be the same as the PROPDMG unit, if the field is blank.
+There are unexpected values in the PROPDMGEXP/CROPDMGEXP fields for a small fraction of the events. These are interpreted suitably. For example, if the damage (PROPDMG/CROPDMG) field is zero, the unit is irrelevant and imputed as "1." 
 
 
 ```r
@@ -157,7 +157,6 @@ data <- data %>% mutate(PROPDMGEXP = ifelse((PROPDMGEXP == "B" | PROPDMGEXP == "
 data <- data %>% mutate(PROPDMGEXP = ifelse((PROPDMGEXP == "K" | PROPDMGEXP == "k"), 3, PROPDMGEXP))
 data <- data %>% mutate(PROPDMGEXP = ifelse((PROPDMGEXP == "H" | PROPDMGEXP == "h"), 2, PROPDMGEXP))
 data <- data %>% mutate(PROPDMGEXP = ifelse((PROPDMGEXP == "" | PROPDMGEXP == "-"), 0, PROPDMGEXP))
-data <- data %>% mutate(PROPDMGEXP = as.numeric(PROPDMGEXP))
 data <- data %>% mutate(CROPDMGEXP = ifelse((CROPDMGEXP == "" | CROPDMGEXP == "?"), 0, CROPDMGEXP))
 #Use PROPDGM exponent if CROPDMG exponent is zero: best option after looking at the relevant rows
 data <- data %>% mutate(CROPDMGEXP = ifelse((CROPDMGEXP == "0"), PROPDMGEXP, CROPDMGEXP))
@@ -168,10 +167,10 @@ data <- data %>% mutate(CROPDMGEXP = ifelse((CROPDMGEXP == "K" | CROPDMGEXP == "
 # See http://www.water.ca.gov/floodsafe/ca-flood-preparedness/fpw-day3.cfm
 data[605953,"PROPDMGEXP"] <- 6
 ```
-### Comments:
+
+### Notes:
 
 - The focus is on reproduciblity aspects, the report could be improved a lot in other settings.
-- The source data is questionable in many ways
+- The source data is questionable in many ways.
 - Inflation is not considered for the economic damage. This has the effect of reducing the weightage of the older events, which I think is ok.
-
 - No caching is used. Reproducing the report takes only a couple of minutes including downloading the file.
